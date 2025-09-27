@@ -1,16 +1,41 @@
+// import axios from "axios";
+
+// const axiosInstance = axios.create({
+//   baseURL: "http://localhost:5000/api", // adjust if deployed
+// });
+
+// // Add token automatically
+// axiosInstance.interceptors.request.use((config) => {
+//   const token = localStorage.getItem("token");
+//   if (token) {
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+//   return config;
+// });
+
+
+// export default axiosInstance;
+
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api", // adjust if deployed
+  baseURL: "http://localhost:5000/api", // change to your API
 });
 
-// Add token automatically
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Interceptor for expired tokens
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.message === "Token expired, please log in again"
+    ) {
+      alert("⚠️ Session expired. Please log in again."); // ✅ alert here
+      localStorage.removeItem("user");
+      window.location.href = "/login"; // redirect to login page
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 export default axiosInstance;

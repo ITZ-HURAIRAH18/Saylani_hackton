@@ -8,11 +8,14 @@ export const protect = async (req, res, next) => {
     return res.status(401).json({ message: "Not authorized, no token" });
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+   try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // throws if expired
     req.user = await User.findById(decoded.id).select("-password");
     next();
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired, please log in again" });
+    }
     res.status(401).json({ message: "Token invalid" });
   }
 };
