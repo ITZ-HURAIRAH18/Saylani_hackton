@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; // ✅ use context
-
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
 const Login = () => {
+ // Redux dispatch
+   const dispatch = useDispatch();
+
+
+
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -13,29 +20,38 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setIsLoading(true);
 
-    try {
-      // ✅ Call context login
-      await login(formData.email, formData.password);
+  try {
+    // ✅ Call context login (this handles API + stores user in localStorage)
+    await login(formData.email, formData.password);
 
-      // ✅ Get user role from localStorage
-      const user = JSON.parse(localStorage.getItem("user"));
+    // ✅ Get user from localStorage after login
+    const user = JSON.parse(localStorage.getItem("user"));
 
-      if (user?.role === "ngo") {
-        navigate("/dashboard/ngo");
-      } else {
-        navigate("/dashboard/donor");
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
-    } finally {
-      setIsLoading(false);
+    // ✅ Save user in Redux
+  // ✅ Save user in Redux
+if (user) {
+  dispatch(setUser(user));
+  console.log("User saved to Redux:", user); // debug
+}
+
+    // ✅ Redirect based on role
+    if (user?.role === "ngo") {
+      navigate("/dashboard/ngo");
+    } else {
+      navigate("/dashboard/donor");
     }
-  };
+  } catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

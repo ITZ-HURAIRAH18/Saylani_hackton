@@ -1,16 +1,18 @@
 import { useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
+import { useSelector } from "react-redux";   // ⬅️ Import this
 
 const DonationModal = ({ campaign, onClose }) => {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+const userId = useSelector((state) => state.user.id);
   if (!campaign) return null; // safety check
 
   const handleDonate = async () => {
     setIsLoading(true);
     try {
+       console.log("User ID:", userId);
       await axiosInstance.post(`/donations/${campaign._id}/donate`, { amount, message });
 
       alert("Donation successful 🎉");
