@@ -9,7 +9,7 @@ import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 
 dotenv.config();
-console.log("Hi from Server ",process.env.MONGO_URI)
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
