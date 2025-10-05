@@ -31,15 +31,33 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
+  // 🔹 Step 1: login (may return OTP message OR token+user)
   const login = async (email, password) => {
     const res = await axios.post("http://localhost:5000/api/auth/login", {
       email,
       password,
     });
+    // If backend sends user+token → direct login (admin)
+    if (res.data.user && res.data.token) {
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setToken(res.data.token);
+      setUser(res.data.user);
+    }
+    return res.data; // could be OTP message or user+token
+  };
+
+  // 🔹 Step 2: verify OTP (always returns user+token)
+  const verifyOtp = async (email, otp) => {
+    const res = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+      email,
+      otp,
+    });
     localStorage.setItem("token", res.data.token);
     localStorage.setItem("user", JSON.stringify(res.data.user));
     setToken(res.data.token);
     setUser(res.data.user);
+    return res.data;
   };
 
   const signup = async (name, email, password, role) => {
@@ -63,7 +81,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, login, verifyOtp, signup, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

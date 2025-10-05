@@ -3,10 +3,11 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { sendEmail } from "../middleware/nodemail.js";
 
+
 // console.log("JET TOken generated",process.env.JWT_SECRET);
 // Generate JWT
 const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "5m" });
+  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "30m" });
 };
 
 // @desc Signup
@@ -291,6 +292,10 @@ export const signup = async (req, res) => {
 
 // @desc Login
 
+
+// Temporary OTP store (replace with DB/Redis in production)
+const otpStore = {};
+
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -304,7 +309,57 @@ export const login = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    res.status(200).json({
+    // ✅ If admin → login directly
+    if (user.role === "admin") {
+      return res.status(200).json({
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        token: generateToken(user._id, user.role),
+      });
+    }
+
+    // ✅ If donor/ngo → Send OTP
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit
+    otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 }; // 5 min expiry
+
+    const htmlTemplate = `
+      <h2>FundHub Login Verification</h2>
+      <p>Your OTP code is: <b>${otp}</b></p>
+      <p>This code will expire in 5 minutes.</p>
+    `;
+
+    await sendEmail(user._id, "FundHub Login Verification Code", htmlTemplate);
+
+    return res.status(200).json({ message: "OTP sent to your email" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!otpStore[email])
+      return res.status(400).json({ message: "OTP not found or expired" });
+
+    const { otp: savedOtp, expires } = otpStore[email];
+    if (Date.now() > expires) {
+      delete otpStore[email];
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    if (parseInt(otp) !== savedOtp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    // OTP is correct → issue token
+    delete otpStore[email];
+    const user = await User.findOne({ email });
+
+    return res.status(200).json({
       user: {
         _id: user._id,
         name: user.name,
@@ -317,3 +372,4 @@ export const login = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
