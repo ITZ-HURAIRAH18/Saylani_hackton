@@ -18,10 +18,11 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "https://saylani-hackton-9pw4-awuzbmyao.vercel.app", // ✅ your actual frontend domain
-      "http://localhost:5173", // ✅ for local testing
+      "https://saylani-hackton-9pw4-awuzbmyao.vercel.app", // your frontend
+      "http://localhost:5173", // for local dev
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
