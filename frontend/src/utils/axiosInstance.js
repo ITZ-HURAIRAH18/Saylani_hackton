@@ -27,7 +27,7 @@ console.log("✅ Frontend ENV:",  import.meta.env.VITE_API_URL); // Debug
 // });
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL.replace(/\/$/, "") 
+  baseURL: import.meta.env.VITE_API_URL
   // baseURL: "http://localhost:5000/api",
 });
 
