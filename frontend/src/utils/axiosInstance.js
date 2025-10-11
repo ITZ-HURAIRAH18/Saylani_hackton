@@ -19,7 +19,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api", // change to your API
+  // baseURL: "http://localhost:5000/api", // change to your API
+  baseURL: "https://saylani-hackton-eight.vercel.app//api", // change to your API
 });
 
 // Interceptor for expired tokens
