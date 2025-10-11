@@ -27,7 +27,8 @@ console.log("✅ Frontend ENV:",  import.meta.env.VITE_API_URL); // Debug
 // });
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
+  // baseURL: import.meta.env.VITE_API_URL
+  baseURL:"https://saylani-hackton-eight.vercel.app/api"
   // baseURL: "http://localhost:5000/api",
 });
 
