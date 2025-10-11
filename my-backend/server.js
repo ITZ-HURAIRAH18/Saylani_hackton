@@ -18,13 +18,14 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      "https://saylani-hackton-9pw4.vercel.app", // your frontend domain
-      "http://localhost:5173", // optional for local development
+      "https://saylani-hackton-9pw4-awuzbmyao.vercel.app", // ✅ your actual frontend domain
+      "http://localhost:5173", // ✅ for local testing
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
 app.use(express.json());
 
 // MongoDB Connection
