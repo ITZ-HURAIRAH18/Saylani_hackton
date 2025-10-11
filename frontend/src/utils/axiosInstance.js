@@ -17,6 +17,9 @@
 // export default axiosInstance;
 
 import axios from "axios";
+console.log("✅ Frontend ENV:",  import.meta.env.VITE_API_URL); // Debug
+
+
 
 // const axiosInstance = axios.create({
 //   // baseURL: "http://localhost:5000/api", // change to your API
@@ -24,7 +27,8 @@ import axios from "axios";
 // });
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL.replace(/\/$/, "") || "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL.replace(/\/$/, "") 
+  // baseURL: "http://localhost:5000/api",
 });
 
 
@@ -45,4 +49,3 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
-VITE_API_URL
