@@ -26,9 +26,7 @@ app.use(
     credentials: true,
   })
 );
-app.get("/api/test-cors", (req, res) => {
-  res.json({ message: "CORS test successful" });
-});
+
 
 app.use(express.json());
 
