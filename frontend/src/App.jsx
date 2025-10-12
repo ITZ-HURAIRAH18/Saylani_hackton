@@ -8,7 +8,7 @@ import CampaignDetail from "./pages/CampaignDetail";
 import DonorDashboard from "./pages/DonorDashboard";
 import NGODashboard from "./pages/NGODashboard";
 import ProtectedRoute from "./components/ProtectedRoute"; // ✅ renamed
-
+import ChangePassword from "./pages/ChangePassword";
 function App() {
   return (
     <Router>
@@ -22,6 +22,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/campaigns" element={<Campaigns />} />
             <Route path="/campaign/:id" element={<CampaignDetail />} />
+<Route path="/change-password" element={<ChangePassword />} />
+
 
             {/* Protected routes */}
             <Route
