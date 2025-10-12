@@ -46,11 +46,11 @@ connectDB();
 app.get("/", (req, res) => {
   res.send("DonateHub Backend Running ✅");
 });
+app.use("/auth", authRoutes); // signup/login routes
 
-app.use("/api/auth", authRoutes); // signup/login routes
-app.use("/api/campaigns", campaignRoutes);
-app.use("/api/donations", donationRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/campaigns", campaignRoutes);
+app.use("/donations", donationRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 
 
