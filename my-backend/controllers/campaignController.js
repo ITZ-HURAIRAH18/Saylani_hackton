@@ -80,7 +80,19 @@ export const getCampaigns = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
+export const getCampaignById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const campaign = await Campaign.findById(id);
+    if (!campaign) {
+      return res.status(404).json({ message: "Campaign not found" });
+    }
+    res.json(campaign);
+  } catch (error) {
+    console.error("Error fetching campaign by id:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 // Auto-update raisedAmount when donation happens
 export const addDonation = async (req, res) => {
   try {
