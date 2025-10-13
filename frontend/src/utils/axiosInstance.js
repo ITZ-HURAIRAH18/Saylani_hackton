@@ -17,9 +17,8 @@
 // export default axiosInstance;
 
 import axios from "axios";
-// console.log("✅ Frontend ENV:",  import.meta.env.VITE_API_URL); // Debug
-const rawBaseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-const baseURL = rawBaseURL.replace(/\/+$/, "");
+console.log("✅ Frontend ENV:",  import.meta.env.VITE_API_URL); // Debug
+
 
 
 // const axiosInstance = axios.create({
@@ -27,14 +26,12 @@ const baseURL = rawBaseURL.replace(/\/+$/, "");
 //   baseURL: "https://saylani-hackton-eight.vercel.app//api", // change to your API
 // });
 
-// const axiosInstance = axios.create({
-//   // baseURL: import.meta.env.VITE_API_URL
-//   baseURL:"https://saylani-hackton-eight.vercel.app/api"
-//   // baseURL: "http://localhost:5000/api",
-// });
 const axiosInstance = axios.create({
-  baseURL,
+  // baseURL: import.meta.env.VITE_API_URL
+  baseURL:"https://saylani-hackton-eight.vercel.app/api"
+  // baseURL: "http://localhost:5000/api",
 });
+
 
 // Interceptor for expired tokens
 axiosInstance.interceptors.response.use(

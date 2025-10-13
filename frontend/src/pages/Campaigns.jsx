@@ -13,8 +13,7 @@ const Campaigns = () => {
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        // const res = await axiosInstance.get("/campaigns/");
-        const res = await axiosInstance.get("campaigns/");
+        const res = await axiosInstance.get("/campaigns/");
         const data = Array.isArray(res.data) ? res.data : res.data.campaigns || [];
         setCampaigns(data);
 
