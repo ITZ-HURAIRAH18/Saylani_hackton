@@ -43,12 +43,12 @@ const connectDB = async () => {
 connectDB();
 
 // Routes
-// app.get("/", (req, res) => {
-//   res.send("DonateHub Backend Running ✅");
-// });
+app.get("/", (req, res) => {
+  res.send("DonateHub Backend Running ✅");
+});
 
 app.use("/api/auth", authRoutes); // signup/login routes
-app.use("api/campaigns", campaignRoutes);
+app.use("/api/campaigns", campaignRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
