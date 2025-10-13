@@ -16,7 +16,7 @@ const CampaignDetail = () => {
     if (!campaign) {
       const fetchCampaign = async () => {
         try {
-          const res = await axiosInstance.get(`/campaigns/${id}`);
+          const res = await axiosInstance.get(`campaigns/${id}`);
           setCampaign(res.data);
         } catch (err) {
           console.error("Error fetching campaign:", err);

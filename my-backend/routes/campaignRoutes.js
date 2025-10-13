@@ -4,6 +4,7 @@ import {
   updateCampaign,
   deleteCampaign,
   getCampaigns,
+  getCampaignById,
   addDonation,
 } from "../controllers/campaignController.js";
 // import { authMiddleware } from "../middlewares/authMiddleware.js";
@@ -18,5 +19,6 @@ router.delete("/:id", protect, deleteCampaign);
 // Donor APIs
 router.get("/", getCampaigns);
 router.post("/:id/donate", protect, addDonation);
+router.get("/:id", getCampaignById);
 
 export default router;
