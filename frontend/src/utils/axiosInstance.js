@@ -23,7 +23,7 @@ console.log("✅ Frontend ENV:",  import.meta.env.VITE_API_URL); // Debug
 
 // const axiosInstance = axios.create({
 //   // baseURL: "http://localhost:5000/api", // change to your API
-//   baseURL: "https://saylani-hackton-eight.vercel.app//api", // change to your API
+//   baseURL: "https://saylani-hackton-eight.vercel.app/api", // change to your API
 // });
 
 const axiosInstance = axios.create({
