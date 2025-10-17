@@ -22,6 +22,7 @@ export default function Signup() {
     setIsLoading(true);
     try {
       const res = await signup(formData);
+      console.log("Signup successful:", res.data);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       if (res.data.user.role === "ngo") {
