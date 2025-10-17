@@ -19,6 +19,7 @@ app.use(
   cors({
     origin: [
       "https://saylani-hackton-9pw4-awuzbmyao.vercel.app",
+      "https://saylani-hackton-9pw4-awuzbmyao.vercel.app/",
       "http://localhost:5173",
     ],
     credentials: true,
