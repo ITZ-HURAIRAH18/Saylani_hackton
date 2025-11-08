@@ -70,7 +70,10 @@ const NGODashboard = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axiosInstance.post("/campaigns/", formData);
+    await axiosInstance.post("/campaigns/", formData, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
       setShowModal(false);
       setFormData({ title: "", description: "", category: "", goalAmount: "" });
       fetchCampaigns(); // refresh list

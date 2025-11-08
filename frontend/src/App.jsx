@@ -22,7 +22,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/campaigns" element={<Campaigns />} />
             <Route path="/campaign/:id" element={<CampaignDetail />} />
-<Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/change-password" element={<ChangePassword />} />
 
 
             {/* Protected routes */}
