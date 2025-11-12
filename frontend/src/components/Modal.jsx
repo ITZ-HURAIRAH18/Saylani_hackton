@@ -12,14 +12,24 @@ const userId = useSelector((state) => state.user.id);
   const handleDonate = async () => {
     setIsLoading(true);
     try {
-       console.log("User ID:", userId);
-      await axiosInstance.post(`/donations/${campaign._id}/donate`, { amount, message });
+      console.log("User ID:", userId);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please log in to make a donation");
+        return;
+      }
+      
+      await axiosInstance.post(`/donations/${campaign._id}/donate`, { 
+        amount: Number(amount), 
+        message 
+      });
 
       alert("Donation successful 🎉");
       onClose();
     } catch (err) {
-      console.error(err);
-      alert("Error donating!");
+      console.error("Donation error:", err);
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || "Error donating! Please try again.";
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -8,7 +8,7 @@ export const protect = async (req, res, next) => {
     return res.status(401).json({ message: "Not authorized, no token" });
   }
 
-   try {
+  try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET); // throws if expired
     req.user = await User.findById(decoded.id).select("-password");
     next();
