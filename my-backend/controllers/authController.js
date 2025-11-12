@@ -291,11 +291,6 @@ export const signup = async (req, res) => {
 
 
 // @desc Login
-
-
-// Temporary OTP store (replace with DB/Redis in production)
-const otpStore = {};
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -323,8 +318,13 @@ export const login = async (req, res) => {
     }
 
     // ✅ If donor/ngo → Send OTP
-    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit
-    otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 }; // 5 min expiry
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry
+
+    // Save OTP to user document
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
 
     const htmlTemplate = `
       <h2>FundHub Login Verification</h2>
@@ -343,21 +343,31 @@ export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    if (!otpStore[email])
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    // Check if OTP exists
+    if (!user.otp || !user.otpExpires)
       return res.status(400).json({ message: "OTP not found or expired" });
 
-    const { otp: savedOtp, expires } = otpStore[email];
-    if (Date.now() > expires) {
-      delete otpStore[email];
+    // Check if OTP is expired
+    if (new Date() > user.otpExpires) {
+      // Clear expired OTP
+      user.otp = null;
+      user.otpExpires = null;
+      await user.save();
       return res.status(400).json({ message: "OTP expired" });
     }
 
-    if (parseInt(otp) !== savedOtp)
+    // Verify OTP
+    if (otp !== user.otp)
       return res.status(400).json({ message: "Invalid OTP" });
 
-    // OTP is correct → issue token
-    delete otpStore[email];
-    const user = await User.findOne({ email });
+    // OTP is correct → clear OTP and issue token
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
 
     return res.status(200).json({
       user: {

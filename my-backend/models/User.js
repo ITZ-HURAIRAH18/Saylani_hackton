@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema(
       enum: ["ngo", "donor"],
       default: "donor",
     },
+    otp: { type: String, default: null },
+    otpExpires: { type: Date, default: null },
   },
   { timestamps: true }
 );

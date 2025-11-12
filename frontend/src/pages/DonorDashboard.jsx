@@ -160,3 +160,5 @@ const MetricCard = ({ label, value, icon, gradient, text }) => (
     </div>
   </div>
 );
+
+export default DonorDashboard;
