@@ -4,27 +4,70 @@ import Campaign from "../models/Campaign.js";
 
 export const createCampaign = async (req, res) => {
   try {
+    console.log("Create campaign request received:", {
+      body: req.body,
+      user: req.user ? { id: req.user.id, email: req.user.email } : "No user",
+    });
+
     const { title, description, category, goalAmount, deadline } = req.body;
 
+    // Validate required fields
     if (!title || !description || !goalAmount || !deadline) {
-      return res.status(400).json({ message: "Missing required fields" });
+      const missing = [];
+      if (!title) missing.push("title");
+      if (!description) missing.push("description");
+      if (!goalAmount) missing.push("goalAmount");
+      if (!deadline) missing.push("deadline");
+      return res.status(400).json({ 
+        message: `Missing required fields: ${missing.join(", ")}` 
+      });
+    }
+
+    // Validate goalAmount is a number
+    if (isNaN(goalAmount) || Number(goalAmount) <= 0) {
+      return res.status(400).json({ message: "Goal amount must be a positive number" });
+    }
+
+    // Validate deadline is a valid date
+    const deadlineDate = new Date(deadline);
+    if (isNaN(deadlineDate.getTime())) {
+      return res.status(400).json({ message: "Invalid deadline date" });
+    }
+
+    // Check if user is authenticated
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "User not authenticated" });
     }
 
     const newCampaign = new Campaign({
-      title,
-      description,
-      category,
-      goalAmount,
+      title: title.trim(),
+      description: description.trim(),
+      category: category?.trim() || "",
+      goalAmount: Number(goalAmount),
       raisedAmount: 0,
-      createdBy: req.user.id, // assuming `protect` middleware sets req.user
-      deadline: new Date(deadline), // ensure it's stored as a Date
+      createdBy: req.user.id,
+      deadline: deadlineDate,
     });
 
     const savedCampaign = await newCampaign.save();
+    console.log("Campaign created successfully:", savedCampaign._id);
+    
     res.status(201).json(savedCampaign);
   } catch (error) {
     console.error("Error in createCampaign:", error);
-    res.status(500).json({ message: "Server error" });
+    
+    // Handle validation errors
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ 
+        message: "Validation error", 
+        errors: Object.values(error.errors).map(e => e.message) 
+      });
+    }
+
+    res.status(500).json({ 
+      message: "Server error", 
+      error: process.env.NODE_ENV === "development" ? error.message : undefined 
+    });
   }
 };
 
@@ -33,10 +76,16 @@ export const createCampaign = async (req, res) => {
 export const updateCampaign = async (req, res) => {
   try {
     const { id } = req.params;
+    const updateData = { ...req.body };
+
+    // Convert deadline to Date if provided
+    if (updateData.deadline) {
+      updateData.deadline = new Date(updateData.deadline);
+    }
 
     const campaign = await Campaign.findOneAndUpdate(
-      { _id: id, ngo: req.user._id }, // only NGO owner can edit
-      req.body,
+      { _id: id, createdBy: req.user.id }, // only NGO owner can edit
+      updateData,
       { new: true }
     );
 
@@ -57,7 +106,7 @@ export const deleteCampaign = async (req, res) => {
 
     const campaign = await Campaign.findOneAndDelete({
       _id: id,
-      ngo: req.user._id,
+      createdBy: req.user.id,
     });
 
     if (!campaign) {
