@@ -20,7 +20,7 @@ function App() {
         <div className="p-4">
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<Campaigns />} /> {/* 👈 default homepage */}
+            <Route path="/" element={<Login />} /> 👈 default homepage
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/campaigns" element={<Campaigns />} />
