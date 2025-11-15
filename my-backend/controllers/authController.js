@@ -21,12 +21,64 @@ export const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create user with unverified status
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       role,
+      isVerified: false,
     });
+
+    // Generate OTP for email verification
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
+
+    // Save OTP to user document
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send verification email
+    const verificationTemplate = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Verify Your Email - FundHub</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9;">
+          <div style="background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">Welcome to FundHub! 🎉</h2>
+            <p style="font-size: 16px; margin-bottom: 20px;">Hi <strong>${user.name}</strong>,</p>
+            <p style="font-size: 16px; margin-bottom: 20px;">Thank you for signing up! To complete your registration, please verify your email address with the OTP below:</p>
+            <div style="background: #3498db; color: white; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+              <h3 style="margin: 0; font-size: 24px; letter-spacing: 3px;">${otp}</h3>
+            </div>
+            <p style="font-size: 14px; color: #7f8c8d; text-align: center;">This OTP will expire in 10 minutes.</p>
+            <p style="font-size: 16px; margin-top: 30px;">If you didn't create this account, please ignore this email.</p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+            <p style="font-size: 14px; color: #7f8c8d; text-align: center;">© ${new Date().getFullYear()} FundHub. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    try {
+      await sendEmail(user._id, "Verify Your Email - FundHub", verificationTemplate, true);
+      
+      return res.status(201).json({
+        message: "Account created! Please check your email for verification code.",
+        email: user.email,
+        requiresVerification: true
+      });
+    } catch (emailError) {
+      // If email fails, remove the user
+      await User.findByIdAndDelete(user._id);
+      return res.status(500).json({ message: "Failed to send verification email. Please try again." });
+    }
 
     // Welcome email (user)
 //  const userWelcomeTemplate = (user) => `
@@ -269,21 +321,8 @@ export const signup = async (req, res) => {
 // `;
 
 
-    // ✅ Send welcome email to user
-    // await sendEmail(user._id, "Welcome to FundHub 🎉", userWelcomeTemplate(user),true);
-
-    // ✅ Send new user alert to admin
-    // await sendEmail(user._id, "🚨 New User Registered", adminNewUserTemplate(user), true);
-
-    res.status(201).json({
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      token: generateToken(user._id, user.role),
-    });
+    // This code is now handled above with email verification
+    // User will only get token after email verification
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -303,6 +342,15 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
+
+    // Check if user is verified (except for admin)
+    if (user.role !== "admin" && !user.isVerified) {
+      return res.status(400).json({ 
+        message: "Please verify your email first.",
+        requiresVerification: true,
+        email: user.email
+      });
+    }
 
     // ✅ If admin → login directly
     if (user.role === "admin") {
@@ -339,6 +387,119 @@ export const login = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+export const resendVerificationOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    // Check if user is already verified
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    // Generate new OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
+
+    // Save new OTP
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send verification email
+    const verificationTemplate = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Resend Verification - FundHub</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9;">
+          <div style="background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h2 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">Verify Your Email 📧</h2>
+            <p style="font-size: 16px; margin-bottom: 20px;">Hi <strong>${user.name}</strong>,</p>
+            <p style="font-size: 16px; margin-bottom: 20px;">Here's your new verification code:</p>
+            <div style="background: #e74c3c; color: white; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+              <h3 style="margin: 0; font-size: 24px; letter-spacing: 3px;">${otp}</h3>
+            </div>
+            <p style="font-size: 14px; color: #7f8c8d; text-align: center;">This OTP will expire in 10 minutes.</p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+            <p style="font-size: 14px; color: #7f8c8d; text-align: center;">© ${new Date().getFullYear()} FundHub. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    try {
+      await sendEmail(user._id, "Resend Verification Code - FundHub", verificationTemplate, true);
+      return res.status(200).json({ 
+        message: "Verification code resent to your email",
+        email: user.email
+      });
+    } catch (emailError) {
+      return res.status(500).json({ message: "Failed to resend verification email" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    // Check if user is already verified
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    // Check if OTP exists
+    if (!user.otp || !user.otpExpires)
+      return res.status(400).json({ message: "OTP not found or expired" });
+
+    // Check if OTP is expired
+    if (new Date() > user.otpExpires) {
+      // Clear expired OTP
+      user.otp = null;
+      user.otpExpires = null;
+      await user.save();
+      return res.status(400).json({ message: "OTP expired. Please request a new one." });
+    }
+
+    // Verify OTP
+    if (otp !== user.otp)
+      return res.status(400).json({ message: "Invalid OTP" });
+
+    // OTP is correct → verify user and clear OTP
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Email verified successfully! You can now log in.",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;

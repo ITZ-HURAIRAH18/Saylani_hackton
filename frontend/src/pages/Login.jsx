@@ -76,26 +76,26 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header Section */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-gray-800 to-black rounded-2xl flex items-center justify-center shadow-lg border border-gray-700">
             <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text">
+          <h2 className="mt-6 text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
             Welcome Back
           </h2>
-          <p className="mt-2 text-sm text-gray-600">Sign in to your FundHub account</p>
+          <p className="mt-2 text-sm text-gray-300">Sign in to your FundHub account</p>
         </div>
 
         {/* Auth Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+        <div className="bg-black/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-700 p-8">
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center space-x-2">
-              <svg className="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mb-6 bg-gray-900 border border-red-600 text-red-400 px-4 py-3 rounded-lg flex items-center space-x-2">
+              <svg className="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="text-sm font-medium">{error}</span>
@@ -106,7 +106,7 @@ const Login = () => {
             // STEP 1: Login Form
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-semibold text-gray-700 block">
+                <label htmlFor="email" className="text-sm font-semibold text-white block">
                   Email Address
                 </label>
                 <input
@@ -116,13 +116,13 @@ const Login = () => {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-600 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-white focus:border-white bg-gray-900/50 text-white placeholder-gray-500"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-semibold text-gray-700 block">
+                <label htmlFor="password" className="text-sm font-semibold text-white block">
                   Password
                 </label>
                 <input
@@ -132,7 +132,7 @@ const Login = () => {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-600 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-white focus:border-white bg-gray-900/50 text-white placeholder-gray-500"
                   required
                 />
               </div>
@@ -140,7 +140,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 text-white font-semibold rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
+                className="w-full py-3 px-4 text-black font-semibold rounded-xl bg-gradient-to-r from-white to-gray-200 hover:from-gray-100 hover:to-white shadow-lg transition-all duration-200"
               >
                 {isLoading ? "Signing in..." : "Sign In"}
               </button>
@@ -149,7 +149,7 @@ const Login = () => {
             // STEP 2: OTP Form
             <form onSubmit={handleOtpVerify} className="space-y-6">
               <div className="space-y-2">
-                <label htmlFor="otp" className="text-sm font-semibold text-gray-700 block">
+                <label htmlFor="otp" className="text-sm font-semibold text-white block">
                   Enter OTP sent to your email
                 </label>
                 <input
@@ -159,7 +159,7 @@ const Login = () => {
                   placeholder="Enter OTP"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-gray-600 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-white focus:border-white bg-gray-900/50 text-white placeholder-gray-500 text-center font-mono tracking-widest"
                   required
                 />
               </div>
@@ -167,7 +167,7 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 text-white font-semibold rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
+                className="w-full py-3 px-4 text-black font-semibold rounded-xl bg-gradient-to-r from-white to-gray-200 hover:from-gray-100 hover:to-white shadow-lg transition-all duration-200"
               >
                 {isLoading ? "Verifying OTP..." : "Verify OTP"}
               </button>
@@ -176,11 +176,11 @@ const Login = () => {
 
           {/* Footer Links */}
           <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               Don't have an account?{" "}
-              <a href="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500">Sign up here</a>
+              <a href="/signup" className="font-semibold text-white hover:text-gray-300 transition-colors duration-200">Sign up here</a>
             </p>
-            <a href="/forgot-password" className="text-sm text-gray-500 hover:text-gray-700">
+            <a href="/forgot-password" className="text-sm text-gray-400 hover:text-white transition-colors duration-200">
               Forgot your password?
             </a>
           </div>
