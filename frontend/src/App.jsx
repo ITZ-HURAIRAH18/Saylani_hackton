@@ -12,49 +12,49 @@ import DonorDashboard from "./pages/DonorDashboard";
 import NGODashboard from "./pages/NGODashboard";
 import ProtectedRoute from "./components/ProtectedRoute"; // ✅ renamed
 import ChangePassword from "./pages/ChangePassword";
+
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-neutral-100 text-neutral-900">
         <Navbar />
-        <div className="p-4">
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Login />} /> 👈 default homepage
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/campaigns" element={<Campaigns />} />
-            <Route path="/campaign/:id" element={<CampaignDetail />} />
-            <Route path="/change-password" element={<ChangePassword />} />
+        <Routes>
+          {/* Public routes - full screen pages without padding */}
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
+          {/* Pages with navbar and padding */}
+          <Route path="/campaigns" element={<div className="p-4"><Campaigns /></div>} />
+          <Route path="/campaign/:id" element={<div className="p-4"><CampaignDetail /></div>} />
+          <Route path="/change-password" element={<div className="p-4"><ChangePassword /></div>} />
 
-
-            {/* Protected routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/donor"
-              element={
-                <ProtectedRoute role="donor">
-                  <DonorDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/ngo"
-              element={
-                <ProtectedRoute role="ngo">
-                  <NGODashboard />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </div>
+          {/* Protected routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <div className="p-4"><Dashboard /></div>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/donor"
+            element={
+              <ProtectedRoute role="donor">
+                <div className="p-4"><DonorDashboard /></div>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/ngo"
+            element={
+              <ProtectedRoute role="ngo">
+                <div className="p-4"><NGODashboard /></div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
         <ToastContainer
           position="top-right"
           autoClose={3000}

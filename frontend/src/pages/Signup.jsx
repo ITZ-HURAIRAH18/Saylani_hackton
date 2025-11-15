@@ -81,8 +81,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center py-12">
+      <div className="max-w-md w-full mx-4 space-y-8">
         {/* Header Section */}
         <div className="text-center">
           <div className="mx-auto h-16 w-16 bg-gradient-to-r from-gray-800 to-black rounded-2xl flex items-center justify-center shadow-lg border border-gray-700">
