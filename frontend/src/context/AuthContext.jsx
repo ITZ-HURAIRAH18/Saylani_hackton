@@ -49,15 +49,24 @@ export const AuthProvider = ({ children }) => {
 
   // 🔹 Step 2: verify OTP (always returns user+token)
   const verifyOtp = async (email, otp) => {
-    const res = await axios.post("https://donor-backend.vercel.app/api/auth/verify-otp", {
-      email,
-      otp,
-    });
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    setToken(res.data.token);
-    setUser(res.data.user);
-    return res.data;
+    try {
+      console.log("Sending OTP verification request:", { email, otp, url: "https://donor-backend.vercel.app/api/auth/verify-otp" });
+      const res = await axios.post("https://donor-backend.vercel.app/api/auth/verify-otp", {
+        email,
+        otp,
+      });
+      console.log("OTP verification successful:", res.data);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setToken(res.data.token);
+      setUser(res.data.user);
+      return res.data;
+    } catch (error) {
+      console.error("verifyOtp error:", error);
+      console.error("Error response data:", error.response?.data);
+      console.error("Error response status:", error.response?.status);
+      throw error;
+    }
   };
 
   const signup = async (name, email, password, role) => {

@@ -502,18 +502,31 @@ export const verifyEmail = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   try {
+    console.log("=== VERIFY OTP REQUEST ===");
+    console.log("Request body:", req.body);
     const { email, otp } = req.body;
+    console.log("Extracted email:", email);
+    console.log("Extracted otp:", otp);
+    console.log("OTP type:", typeof otp);
 
     // Find user by email
     const user = await User.findOne({ email });
+    console.log("User found:", user ? `Yes (${user.email})` : "No");
     if (!user) return res.status(400).json({ message: "User not found" });
 
     // Check if OTP exists
+    console.log("User OTP:", user.otp);
+    console.log("User OTP type:", typeof user.otp);
+    console.log("User OTP expires:", user.otpExpires);
     if (!user.otp || !user.otpExpires)
       return res.status(400).json({ message: "OTP not found or expired" });
 
     // Check if OTP is expired
-    if (new Date() > user.otpExpires) {
+    const now = new Date();
+    console.log("Current time:", now);
+    console.log("OTP expires at:", user.otpExpires);
+    console.log("Is expired?", now > user.otpExpires);
+    if (now > user.otpExpires) {
       // Clear expired OTP
       user.otp = null;
       user.otpExpires = null;
@@ -522,10 +535,15 @@ export const verifyOtp = async (req, res) => {
     }
 
     // Verify OTP
+    console.log("Comparing OTPs:");
+    console.log("  Received:", otp);
+    console.log("  Stored:", user.otp);
+    console.log("  Match?", otp === user.otp);
     if (otp !== user.otp)
       return res.status(400).json({ message: "Invalid OTP" });
 
     // OTP is correct → clear OTP and issue token
+    console.log("OTP verified successfully!");
     user.otp = null;
     user.otpExpires = null;
     await user.save();
@@ -540,6 +558,7 @@ export const verifyOtp = async (req, res) => {
       token: generateToken(user._id, user.role),
     });
   } catch (err) {
+    console.error("verifyOtp error:", err);
     res.status(500).json({ message: err.message });
   }
 };
