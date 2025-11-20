@@ -1,9 +1,8 @@
 import axios from "axios";
 import { showToast } from "./toast";
 
-// Hardcoded for now - will use env variable later
-const apiURL = "https://donor-backend.vercel.app/api";
-console.log("🌐 API URL:", apiURL); // Debug log
+const apiURL = import.meta.env.VITE_API_URL || "https://donor-backend.vercel.app/api";
+console.log("🌐 API URL:", apiURL);
 
 const axiosInstance = axios.create({
   baseURL: apiURL,

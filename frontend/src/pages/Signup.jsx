@@ -54,7 +54,7 @@ export default function Signup() {
     setError("");
 
     try {
-      const res = await verifyEmail({ email: userEmail, otp });
+      const res = await verifyEmail({ email: userEmail, otp: otp.trim() });
       console.log("Email verified:", res.data);
       
       showToast("Email verified successfully! You can now log in.", "success");

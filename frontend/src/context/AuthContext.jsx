@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
+const API_URL = import.meta.env.VITE_API_URL || "https://donor-backend.vercel.app/api";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -19,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token && !user) {
       axios
-        .get("https://donor-backend.vercel.app/api/auth/me", {
+        .get(`${API_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   // 🔹 Step 1: login (may return OTP message OR token+user)
   const login = async (email, password) => {
-    const res = await axios.post("https://donor-backend.vercel.app/api/auth/login", {
+    const res = await axios.post(`${API_URL}/auth/login`, {
       email,
       password,
     });
@@ -50,8 +51,8 @@ export const AuthProvider = ({ children }) => {
   // 🔹 Step 2: verify OTP (always returns user+token)
   const verifyOtp = async (email, otp) => {
     try {
-      console.log("Sending OTP verification request:", { email, otp, url: "https://donor-backend.vercel.app/api/auth/verify-otp" });
-      const res = await axios.post("https://donor-backend.vercel.app/api/auth/verify-otp", {
+      console.log("Sending OTP verification request:", { email, otp, url: `${API_URL}/auth/verify-otp` });
+      const res = await axios.post(`${API_URL}/auth/verify-otp`, {
         email,
         otp,
       });
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (name, email, password, role) => {
-    const res = await axios.post("https://donor-backend.vercel.app/api/auth/signup", {
+    const res = await axios.post(`${API_URL}/auth/signup`, {
       name,
       email,
       password,

@@ -49,7 +49,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const res = await verifyOtp(formData.email, otp);
+      const res = await verifyOtp(formData.email, otp.trim());
       if (res.user && res.token) {
         saveUserAndRedirect(res.user, res.token);
       }
