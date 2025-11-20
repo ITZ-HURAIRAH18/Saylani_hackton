@@ -1,8 +1,12 @@
 import axios from "axios";
 import { showToast } from "./toast";
 
+// Hardcoded for now - will use env variable later
+const apiURL = "https://donor-backend.vercel.app/api";
+console.log("🌐 API URL:", apiURL); // Debug log
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://donor-backend.vercel.app/api",
+  baseURL: apiURL,
 });
 
 // Add token automatically to all requests
