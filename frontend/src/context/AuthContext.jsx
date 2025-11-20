@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token && !user) {
       axios
-        .get("http://localhost:5000/api/auth/me", {
+        .get("https://donor-backend.vercel.app/api/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   // 🔹 Step 1: login (may return OTP message OR token+user)
   const login = async (email, password) => {
-    const res = await axios.post("http://localhost:5000/api/auth/login", {
+    const res = await axios.post("https://donor-backend.vercel.app/api/auth/login", {
       email,
       password,
     });
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   // 🔹 Step 2: verify OTP (always returns user+token)
   const verifyOtp = async (email, otp) => {
-    const res = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+    const res = await axios.post("https://donor-backend.vercel.app/api/auth/verify-otp", {
       email,
       otp,
     });
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (name, email, password, role) => {
-    const res = await axios.post("http://localhost:5000/api/auth/signup", {
+    const res = await axios.post("https://donor-backend.vercel.app/api/auth/signup", {
       name,
       email,
       password,
